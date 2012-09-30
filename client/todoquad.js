@@ -3,9 +3,17 @@ Todos = new Meteor.Collection('todos');
 var layer = new Kinetic.Layer();
 
 Template.canvas.events = {
-  'click input' : function () {
-    var text=prompt("Give the box text","");
-    Todos.insert({x: 300, y: 300, color: 'yellow', text: text});
+  'click #create-todo' : function () {
+
+    var text = $('#todo-desc').val();
+    var color = $('#todo-color').val();
+    if (text && text.length > 0) {
+      Todos.insert({x: 300, y: 300, color: color, text: text});
+    }
+
+    // reset form
+    $('#todo-desc').val('');
+    $('#todo-color').val('');
   }
 };
 
@@ -15,14 +23,6 @@ Meteor.autosubscribe(function() {
     addBoxToCanvas(todo.x, todo.y, todo.color, todo.text, todo._id);
   });
 });
-
-Todos.find({}).observe({
-    changed: function(new_doc, idx, old_doc) {
-      if(layer) {
-        console.log(new_doc);
-      }
-    }
-  });
 
 window.onload = function() {
   var stage = new Kinetic.Stage({
@@ -35,7 +35,7 @@ window.onload = function() {
 };
 
 function addBoxToCanvas(x, y, color, text, id) {
-  console.log('adding box: x: ' + x + ', y: ' + y + ' color: ' + color + ' text: ' + text);
+  //console.log('adding box: x: ' + x + ', y: ' + y + ' color: ' + color + ' text: ' + text);
 
   var box = new Kinetic.Text({
     id: id,
@@ -63,7 +63,7 @@ function addBoxToCanvas(x, y, color, text, id) {
   box.on("dragend", function() {
     updateBox(this);
   });
-  
+
   box.on('dblclick dbltap', function() {
     var text=prompt("Give the box text",box.textArr);
     this.setText(text);
@@ -73,6 +73,7 @@ function addBoxToCanvas(x, y, color, text, id) {
   box.on('mouseover', function() {
     document.body.style.cursor = 'pointer';
   });
+
   box.on('mouseout', function() {
     document.body.style.cursor = 'default';
   });
