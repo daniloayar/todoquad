@@ -10,10 +10,14 @@ Meteor.autosubscribe(function() {
 });
 
 window.onload = function() {
+  var width = $('#the-grid').css('width').replace('px','') - 2;
+  var height = $(window).height() - 75;
+  console.log('width: ' + width + ' height: ' + height);
+
   var stage = new Kinetic.Stage({
-    container: 'container',
-    width: 1024,
-    height: 768
+    container: 'the-grid',
+    width: width,
+    height: height
   });
 
   stage.add(layer);
@@ -115,7 +119,7 @@ function addBoxToCanvas(x, y, color, text, id) {
     document.body.style.cursor = 'pointer';
   });
 
-  box.on("dragend", function() {
+  box.on('dragend', function() {
     Todos.update({_id: box.getId()}, {$set: {x: box.attrs.x, y: box.attrs.y}});
   });
 

@@ -3,11 +3,26 @@
 </body>
 
 <template name="canvas">
-  <div class="container">
-  	<div id="container"></div>
-  	<a id="new-todo-btn" class="btn btn-primary btn-large">New Item</a>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12 axis-top">IMPORTANT</div>
+    </div>
+    <div class="row-fluid grid-row">
+      <div class="span1 axis-left">URGENT
+        <div class="row-fluid">
+          <a id="new-todo-btn" class="btn btn-primary btn-large">NEW</a>
+        </div>
+      </div>
+      <div id="the-grid" class="span10"></div>
+      <div class="span1 axis-right">NOT URGENT</div>
+    </div>
+    <div class="row-fluid">
+      <div class="span12 axis-bottom" style="text-align: center;">NOT IMPORTANT</div>
+    </div>
   </div>
+  
 
+  <!-- modal dialogs for new/updating items -->
   <div id="new-todo-modal" class="modal hide" style="display: none; ">
     <div class="modal-header">
       <button class="close" data-dismiss="modal">×</button>
