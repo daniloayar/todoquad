@@ -30,6 +30,9 @@ Template.canvas.events = {
   'click #update-todo': function (event) {
     updateTodo();
   },
+  'click #complete-todo': function (event) {
+    removeTodo();
+  },
   'keypress #new-todo-desc': function (event) {
     if (event.which === 13) {
       createTodo();
@@ -55,6 +58,13 @@ Template.canvas.events = {
     }
   }
 };
+
+function removeTodo() {
+  var id = $('#update-todo-id').val();
+  if (id) {
+    Todos.remove({_id: id});
+  }
+}
 
 function createTodo() {
   var text = $('#new-todo-desc').val();
