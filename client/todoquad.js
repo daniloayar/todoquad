@@ -83,12 +83,12 @@ function addBoxToCanvas(x, y, color, text, id) {
     x: x,
     y: y,
     fill: color,
-    strokeWidth: 4,
-    fontSize: 18,
-    fontFamily: 'Calibri',
+    strokeWidth: 1,
+    fontSize: 14,
+    fontFamily: 'Helvetica Neue',
     text: text,
     textFill: 'black',
-    padding: 15,
+    padding: 8,
     draggable: true
   });
 
