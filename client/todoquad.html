@@ -5,21 +5,37 @@
 <template name="canvas">
   <div class="container">
   	<div id="container"></div>
-  	<a data-toggle="modal" href="#todo-modal" class="btn btn-primary btn-large">New Item</a>
+  	<a id="new-todo-btn" class="btn btn-primary btn-large">New Item</a>
   </div>
 
-  <div id="todo-modal" class="modal hide" style="display: none; ">
+  <div id="new-todo-modal" class="modal hide" style="display: none; ">
     <div class="modal-header">
       <button class="close" data-dismiss="modal">×</button>
       <h3>New Todo Item</h3>
     </div>
     <div class="modal-body">
-      <input id='todo-desc' type="text" class="input-medium search-query" placeHolder="description" />
-      <input id='todo-color' type="text" class="input-medium search-query" placeHolder="color" />
+      <input id='new-todo-desc' type="text" class="input-medium search-query" placeHolder="description" />
+      <input id='new-todo-color' type="text" class="input-medium search-query" value="yellow" />
     </div>
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">Cancel</a>
       <a href="#" id="create-todo" class="btn btn-primary" data-dismiss="modal">Create</a>
+    </div>
+  </div>​
+
+  <div id="update-todo-modal" class="modal hide" style="display: none; ">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Update Todo Item</h3>
+    </div>
+    <div class="modal-body">
+      <input id='update-todo-id' type="hidden"/>
+      <input id='update-todo-desc' type="text" class="input-medium search-query" placeHolder="description" />
+      <input id='update-todo-color' type="text" class="input-medium search-query" placeHolder="color" />
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+      <a href="#" id="update-todo" class="btn btn-primary" data-dismiss="modal">Save</a>
     </div>
   </div>​
 </template>

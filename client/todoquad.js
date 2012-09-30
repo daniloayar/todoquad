@@ -2,21 +2,6 @@ Todos = new Meteor.Collection('todos');
 
 var layer = new Kinetic.Layer();
 
-Template.canvas.events = {
-  'click #create-todo' : function () {
-
-    var text = $('#todo-desc').val();
-    var color = $('#todo-color').val();
-    if (text && text.length > 0) {
-      Todos.insert({x: 300, y: 300, color: color, text: text});
-    }
-
-    // reset form
-    $('#todo-desc').val('');
-    $('#todo-color').val('');
-  }
-};
-
 Meteor.autosubscribe(function() {
   layer.removeChildren();
   Todos.find({}).forEach(function (todo) {
@@ -33,6 +18,62 @@ window.onload = function() {
 
   stage.add(layer);
 };
+
+Template.canvas.events = {
+  'click #new-todo-btn': function (event) {
+    $('#new-todo-modal').modal('show');
+    $('#new-todo-desc').focus();
+  },
+  'click #create-todo': function (event) {
+    createTodo();
+  },
+  'click #update-todo': function (event) {
+    updateTodo();
+  },
+  'keypress #new-todo-desc': function (event) {
+    if (event.which === 13) {
+      createTodo();
+      $('#create-todo').click();
+    }
+  },
+  'keypress #new-todo-color': function (event) {
+    if (event.which === 13) {
+      createTodo();
+      $('#create-todo').click();
+    }
+  },
+  'keypress #update-todo-desc': function (event) {
+    if (event.which === 13) {
+      updateTodo();
+      $('#update-todo').click();
+    }
+  },
+  'keypress #update-todo-color': function (event) {
+    if (event.which === 13) {
+      updateTodo();
+      $('#update-todo').click();
+    }
+  }
+};
+
+function createTodo() {
+  var text = $('#new-todo-desc').val();
+  var color = $('#new-todo-color').val();
+  if (text && text.length > 0) {
+    Todos.insert({x: 300, y: 300, color: color, text: text});
+  }
+  // reset
+  $('#new-todo-desc').val('');
+}
+
+function updateTodo() {
+  var id = $('#update-todo-id').val();
+  var text = $('#update-todo-desc').val();
+  var color = $('#update-todo-color').val();
+  if (text && text.length > 0) {
+    Todos.update({_id: id}, {$set: {color: color, text: text}});
+  }
+}
 
 function addBoxToCanvas(x, y, color, text, id) {
   //console.log('adding box: x: ' + x + ', y: ' + y + ' color: ' + color + ' text: ' + text);
@@ -61,13 +102,15 @@ function addBoxToCanvas(x, y, color, text, id) {
   });
 
   box.on("dragend", function() {
-    updateBox(this);
+    Todos.update({_id: box.getId()}, {$set: {x: box.attrs.x, y: box.attrs.y}});
   });
 
   box.on('dblclick dbltap', function() {
-    var text=prompt("Give the box text",box.textArr);
-    this.setText(text);
-    updateBox(this);
+    $('#update-todo-modal').modal('show');
+    $('#update-todo-id').val(box.getId());
+    $('#update-todo-desc').val(box.attrs.text);
+    $('#update-todo-color').val(box.attrs.fill);
+    $('#update-todo-desc').focus();
   });
 
   box.on('mouseover', function() {
@@ -80,8 +123,4 @@ function addBoxToCanvas(x, y, color, text, id) {
 
   layer.add(box);
   layer.draw();
-}
-
-function updateBox(box) {
-  Todos.update({_id: box.getId()}, {x: box.attrs.x, y: box.attrs.y, color: box.attrs.fill, text: box.attrs.text});
 }
