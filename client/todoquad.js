@@ -1,12 +1,28 @@
+Todos = new Meteor.Collection('todos');
+
 var layer = new Kinetic.Layer();
 
 Template.canvas.events = {
   'click input' : function () {
     var text=prompt("Give the box text","");
-    addBox(300, 300, 'yellow', text);
-    layer.draw();
+    Todos.insert({x: 300, y: 300, color: 'yellow', text: text});
   }
 };
+
+Meteor.autosubscribe(function() {
+  layer.removeChildren();
+  Todos.find({}).forEach(function (todo) {
+    addBoxToCanvas(todo.x, todo.y, todo.color, todo.text, todo._id);
+  });
+});
+
+Todos.find({}).observe({
+    changed: function(new_doc, idx, old_doc) {
+      if(layer) {
+        console.log(new_doc);
+      }
+    }
+  });
 
 window.onload = function() {
   var stage = new Kinetic.Stage({
@@ -18,12 +34,14 @@ window.onload = function() {
   stage.add(layer);
 };
 
-function addBox(x, y, color, text) {
+function addBoxToCanvas(x, y, color, text, id) {
+  console.log('adding box: x: ' + x + ', y: ' + y + ' color: ' + color + ' text: ' + text);
 
   var box = new Kinetic.Text({
+    id: id,
     x: x,
     y: y,
-    fill: 'yellow',
+    fill: color,
     strokeWidth: 4,
     fontSize: 18,
     fontFamily: 'Calibri',
@@ -41,14 +59,15 @@ function addBox(x, y, color, text) {
   box.on('dragmove', function() {
     document.body.style.cursor = 'pointer';
   });
-  /*
-   * dblclick to remove box for desktop app
-   * and dbltap to remove box for mobile app
-   */
+
+  box.on("dragend", function() {
+    updateBox(this);
+  });
+  
   box.on('dblclick dbltap', function() {
     var text=prompt("Give the box text",box.textArr);
-    box.setText(text);
-    layer.draw();
+    this.setText(text);
+    updateBox(this);
   });
 
   box.on('mouseover', function() {
@@ -59,4 +78,9 @@ function addBox(x, y, color, text) {
   });
 
   layer.add(box);
+  layer.draw();
+}
+
+function updateBox(box) {
+  Todos.update({_id: box.getId()}, {x: box.attrs.x, y: box.attrs.y, color: box.attrs.fill, text: box.attrs.text});
 }
