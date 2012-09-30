@@ -12,8 +12,8 @@ Meteor.autosubscribe(function() {
 window.onload = function() {
   var stage = new Kinetic.Stage({
     container: 'container',
-    width: 800,
-    height: 600
+    width: 1024,
+    height: 768
   });
 
   stage.add(layer);
@@ -63,6 +63,10 @@ function removeTodo() {
   var id = $('#update-todo-id').val();
   if (id) {
     Todos.remove({_id: id});
+
+    // autosubscribe doesn't seem to work when completing the only todo item on the board
+    layer.removeChildren();
+    layer.draw();
   }
 }
 
