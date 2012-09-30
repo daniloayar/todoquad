@@ -2,8 +2,11 @@ Todos = new Meteor.Collection('todos');
 
 var layer = new Kinetic.Layer();
 
-Meteor.autosubscribe(function() {
+Meteor.autosubscribe(function () {
+  // clean the canvas
   layer.removeChildren();
+
+  Meteor.subscribe('todos');
   Todos.find({}).forEach(function (todo) {
     addBoxToCanvas(todo.x, todo.y, todo.color, todo.text, todo._id);
   });
@@ -12,7 +15,6 @@ Meteor.autosubscribe(function() {
 window.onload = function() {
   var width = $('#the-grid').css('width').replace('px','') - 2;
   var height = $(window).height() - 75;
-  console.log('width: ' + width + ' height: ' + height);
 
   var stage = new Kinetic.Stage({
     container: 'the-grid',
@@ -78,7 +80,11 @@ function createTodo() {
   var text = $('#new-todo-desc').val();
   var color = $('#new-todo-color').val();
   if (text && text.length > 0) {
-    Todos.insert({x: 300, y: 300, color: color, text: text});
+    var userId = null;
+    if (Meteor.user()) {
+      userId = Meteor.user()._id;
+    }
+    Todos.insert({x: 300, y: 300, color: color, text: text, privateTo: userId});
   }
   // reset
   $('#new-todo-desc').val('');
@@ -94,7 +100,6 @@ function updateTodo() {
 }
 
 function addBoxToCanvas(x, y, color, text, id) {
-  //console.log('adding box: x: ' + x + ', y: ' + y + ' color: ' + color + ' text: ' + text);
 
   var box = new Kinetic.Text({
     id: id,
