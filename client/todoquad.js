@@ -27,7 +27,9 @@ window.onload = function() {
     width: width,
     height: height
   });
-  rect.on('dblclick dbltap', function() {
+  rect.on('dblclick dbltap', function(event) {
+    Session.set('clientX', stage.getMousePosition().x);
+    Session.set('clientY', stage.getMousePosition().y);
     $('#new-todo-modal').modal('show');
     $('#new-todo-desc').focus();
   });
@@ -94,7 +96,7 @@ function createTodo() {
     if (Meteor.user()) {
       userId = Meteor.user()._id;
     }
-    Todos.insert({x: 300, y: 300, color: color, text: text, privateTo: userId});
+    Todos.insert({x: Session.get('clientX'), y: Session.get('clientY'), color: color, text: text, privateTo: userId});
   }
   // reset
   $('#new-todo-desc').val('');
