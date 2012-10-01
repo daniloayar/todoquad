@@ -1,5 +1,5 @@
 <body>
-  <div class="login">
+  <div class="login-bar">
     {{> loginButtons}}
   </div>
   {{> canvas}}
@@ -8,7 +8,7 @@
 <template name="canvas">
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span12 axis-top">IMPORTANT</div>
+      <div class="span10 axis-top">IMPORTANT</div>
     </div>
     <div class="row-fluid grid-row">
       <div class="span1 axis-left">URGENT
@@ -16,11 +16,11 @@
           <a id="new-todo-btn" class="btn btn-primary btn-large">NEW</a>
         </div>
       </div>
-      <div id="the-grid" class="span10"></div>
+      <div id="the-grid" class="span8"></div>
       <div class="span1 axis-right">NOT URGENT</div>
     </div>
     <div class="row-fluid">
-      <div class="span12 axis-bottom" style="text-align: center;">NOT IMPORTANT</div>
+      <div class="span10 axis-bottom" style="text-align: center;">NOT IMPORTANT</div>
     </div>
   </div>
   
