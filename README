@@ -1,1 +1,7 @@
-Canvas for adding and aranging todo items.
+TodoQuad is a mashup of todo-lists and Stephen Covey's grid from The Seven Habits of Highly Effective People.
+
+This meteor app should be run using the auth branch:
+https://github.com/meteor/meteor/tree/auth
+
+Helpful documentation:
+https://github.com/meteor/meteor/wiki/Getting-Started-with-Auth
