@@ -22,14 +22,24 @@ window.onload = function() {
     height: height
   });
 
+  // background shape to capture double-click events
+  var rect = new Kinetic.Rect({
+    width: width,
+    height: height
+  });
+  rect.on('dblclick dbltap', function() {
+    $('#new-todo-modal').modal('show');
+    $('#new-todo-desc').focus();
+  });
+  var backLayer = new Kinetic.Layer();
+  backLayer.add(rect);
+  stage.add(backLayer);
+
+  // stage layer goes over backlayer
   stage.add(layer);
 };
 
 Template.canvas.events = {
-  'click #new-todo-btn': function (event) {
-    $('#new-todo-modal').modal('show');
-    $('#new-todo-desc').focus();
-  },
   'click #create-todo': function (event) {
     createTodo();
   },
@@ -100,7 +110,6 @@ function updateTodo() {
 }
 
 function addBoxToCanvas(x, y, color, text, id) {
-
   var box = new Kinetic.Text({
     id: id,
     x: x,
