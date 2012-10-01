@@ -8,7 +8,7 @@ Meteor.autosubscribe(function () {
 
   Meteor.subscribe('todos');
   Todos.find({}).forEach(function (todo) {
-    addBoxToCanvas(todo.x, todo.y, todo.color, todo.text, todo._id);
+    addBoxToCanvas(todo._id, todo.text, todo.color, todo.x, todo.y, todo.degOffset);
   });
 });
 
@@ -96,7 +96,7 @@ function createTodo() {
     if (Meteor.user()) {
       userId = Meteor.user()._id;
     }
-    Todos.insert({x: Session.get('clientX'), y: Session.get('clientY'), color: color, text: text, privateTo: userId});
+    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('clientX'), y: Session.get('clientY'), degOffset: randomInRange(-3.0,3.0)});
   }
   // reset
   $('#new-todo-desc').val('');
@@ -111,20 +111,25 @@ function updateTodo() {
   }
 }
 
-function addBoxToCanvas(x, y, color, text, id) {
+function addBoxToCanvas(id, text, color, x, y, degOffset) {
   var box = new Kinetic.Text({
     id: id,
     x: x,
     y: y,
+    width: 100,
     fill: color,
-    strokeWidth: 1,
+    strokeWidth: 0.1,
     fontSize: 14,
     fontFamily: 'Helvetica Neue',
     text: text,
     textFill: 'black',
-    padding: 8,
+    padding: 10,
     draggable: true
   });
+
+  if (degOffset){
+    box.setRotationDeg(degOffset);
+  }
 
   box.on('dragstart', function() {
     box.moveToTop();
@@ -136,7 +141,7 @@ function addBoxToCanvas(x, y, color, text, id) {
   });
 
   box.on('dragend', function() {
-    Todos.update({_id: box.getId()}, {$set: {x: box.attrs.x, y: box.attrs.y}});
+    Todos.update({_id: box.getId()}, {$set: {x: box.attrs.x, y: box.attrs.y, degOffset: randomInRange(-3.0,3.0)}}, true);
   });
 
   box.on('dblclick dbltap', function() {
@@ -157,4 +162,8 @@ function addBoxToCanvas(x, y, color, text, id) {
 
   layer.add(box);
   layer.draw();
+}
+
+function randomInRange (min, max) {
+    return Math.random() * (max - min) + min;
 }
