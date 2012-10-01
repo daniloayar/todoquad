@@ -29,8 +29,16 @@
       <h3>New Todo Item</h3>
     </div>
     <div class="modal-body">
-      <input id='new-todo-desc' type="text" class="input-medium search-query" placeHolder="description" />
-      <input id='new-todo-color' type="text" class="input-medium search-query" value="yellow" />
+      <table class="table">
+        <tr>
+          <td>Description:</td>
+          <td><input id='new-todo-desc' type="text" class="input-medium search-query" /></td>
+        </tr>
+        <tr>
+          <td>Color:</td>
+          <td><input id='new-todo-color' type="text" class="input-medium search-query" value="FCF0AD" /></td>
+        </tr>
+      </table>
     </div>
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">Cancel</a>
@@ -45,8 +53,16 @@
     </div>
     <div class="modal-body">
       <input id='update-todo-id' type="hidden"/>
-      <input id='update-todo-desc' type="text" class="input-medium search-query" placeHolder="description" />
-      <input id='update-todo-color' type="text" class="input-medium search-query" placeHolder="color" />
+      <table class="table">
+        <tr>
+          <td>Description:</td>
+          <td><input id='update-todo-desc' type="text" class="input-medium search-query" /></td>
+        </tr>
+        <tr>
+          <td>Color:</td>
+          <td><input id='update-todo-color' type="text" class="input-medium search-query"/></td>
+        </tr>
+      </table>
     </div>
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">Cancel</a>
