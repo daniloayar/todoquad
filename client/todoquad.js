@@ -7,7 +7,7 @@ Meteor.autosubscribe(function () {
   layer.removeChildren();
 
   Meteor.subscribe('todos');
-  Todos.find({}).forEach(function (todo) {
+  Todos.find({}, {sort: {lastUpdate: 1}}).forEach(function (todo) {
     addBoxToCanvas(todo._id, todo.text, todo.color, todo.x, todo.y, todo.degOffset);
   });
 });
@@ -96,7 +96,7 @@ function createTodo() {
     if (Meteor.user()) {
       userId = Meteor.user()._id;
     }
-    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('clientX'), y: Session.get('clientY'), degOffset: randomInRange(-3.0,3.0)});
+    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('clientX'), y: Session.get('clientY'), degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()});
   }
   // reset
   $('#new-todo-desc').val('');
@@ -141,7 +141,7 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
   });
 
   box.on('dragend', function() {
-    Todos.update({_id: box.getId()}, {$set: {x: box.attrs.x, y: box.attrs.y, degOffset: randomInRange(-3.0,3.0)}}, true);
+    Todos.update({_id: box.getId()}, {$set: {x: box.attrs.x, y: box.attrs.y, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
   });
 
   box.on('dblclick dbltap', function() {
