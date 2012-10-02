@@ -133,15 +133,6 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     rotationDeg: degOffset
   });
 
-  group.on('dragstart', function() {
-    box.moveToTop();
-    layer.draw();
-  });
-
-  group.on('dragmove', function() {
-    document.body.style.cursor = 'pointer';
-  });
-
   group.on('dragend', function() {
     console.log(group);
     console.log(box);
@@ -157,11 +148,9 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     $('#update-todo-color').val(box.attrs.fill);
     $('#update-todo-desc').focus();
   });
-
   group.on('mouseover', function() {
     document.body.style.cursor = 'pointer';
   });
-
   group.on('mouseout', function() {
     document.body.style.cursor = 'default';
   });
@@ -177,11 +166,34 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     opacity: 0.2
   });
 
+  // add shadow, then the note box
   group.add(shadow);
   group.add(box);
+  
+  var imageObj = new Image();
+  imageObj.onload = function() {
+    var pushPinDegOffset = -15 * Math.abs(degOffset);
+    var pushPin = new Kinetic.Image({
+      x: x + 40,
+      y: y - 10 + (pushPinDegOffset < -20 ? 5 : 0),
+      image: imageObj,
+      width: 20,
+      height: 20,
+      rotationDeg: pushPinDegOffset
+    });
 
-  layer.add(group);
-  layer.draw();
+    // remove the pushpin when we are dragging
+    group.on('dragstart', function() {
+      pushPin.remove();
+      layer.draw();
+    });
+
+    // add everything in this callback (image loading)
+    group.add(pushPin);
+    layer.add(group);
+    layer.draw();
+  };
+  imageObj.src = 'red_pin_48.png';
 }
 
 function randomInRange (min, max) {
