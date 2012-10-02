@@ -1,3 +1,18 @@
+// font stuff
+var fonts = $.Deferred();
+WebFontConfig = {
+  google: { families: [ 'Nothing+You+Could+Do::latin' ] }
+};
+(function() {
+  var wf = document.createElement('script');
+  wf.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+  wf.type = 'text/javascript';
+  wf.async = 'true';
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(wf, s);
+})();
+
+// todos minimongo collection
 Todos = new Meteor.Collection('todos');
 
 var layer = new Kinetic.Layer();
@@ -6,13 +21,22 @@ Meteor.autosubscribe(function () {
   // clean the canvas
   layer.removeChildren();
 
+  var needForceRedraw = true;
+
   Meteor.subscribe('todos');
   Todos.find({}, {sort: {lastUpdate: 1}}).forEach(function (todo) {
+    needForceRedraw = false; // will redraw in addBoxToCanvas
     addBoxToCanvas(todo._id, todo.text, todo.color, todo.x, todo.y, todo.degOffset);
   });
+
+  // cases when Todos query returns empty, still need to redraw
+  if (needForceRedraw) {
+    layer.draw();
+  }
 });
 
-window.onload = function() {
+$(window).bind("load", function() {
+  
   var width = $('#the-grid').css('width').replace('px','') - 2;
   var height = $(window).height() - 75;
 
@@ -39,7 +63,7 @@ window.onload = function() {
 
   // stage layer goes over backlayer
   stage.add(layer);
-};
+});
 
 Template.canvas.events = {
   'click #create-todo': function (event) {
@@ -81,10 +105,6 @@ function removeTodo() {
   var id = $('#update-todo-id').val();
   if (id) {
     Todos.remove({_id: id});
-
-    // autosubscribe doesn't seem to work when completing the only todo item on the board
-    layer.removeChildren();
-    layer.draw();
   }
 }
 
@@ -125,8 +145,8 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     width: 100,
     fill: color,
     strokeWidth: 0.1,
-    fontSize: 14,
-    fontFamily: 'Helvetica Neue',
+    fontSize: 15,
+    fontFamily: 'Nothing You Could Do',
     text: text,
     textFill: 'black',
     padding: 10,
@@ -197,5 +217,5 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
 }
 
 function randomInRange (min, max) {
-    return Math.random() * (max - min) + min;
+  return Math.random() * (max - min) + min;
 }
