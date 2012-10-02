@@ -112,6 +112,12 @@ function updateTodo() {
 }
 
 function addBoxToCanvas(id, text, color, x, y, degOffset) {
+  var group = new Kinetic.Group({
+    id: id,
+    width: 100,
+    draggable: true
+  });
+
   var box = new Kinetic.Text({
     id: id,
     x: x,
@@ -124,27 +130,27 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     text: text,
     textFill: 'black',
     padding: 10,
-    draggable: true
+    rotationDeg: degOffset
   });
 
-  if (degOffset){
-    box.setRotationDeg(degOffset);
-  }
-
-  box.on('dragstart', function() {
+  group.on('dragstart', function() {
     box.moveToTop();
     layer.draw();
   });
 
-  box.on('dragmove', function() {
+  group.on('dragmove', function() {
     document.body.style.cursor = 'pointer';
   });
 
-  box.on('dragend', function() {
-    Todos.update({_id: box.getId()}, {$set: {x: box.attrs.x, y: box.attrs.y, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
+  group.on('dragend', function() {
+    console.log(group);
+    console.log(box);
+    var newX = box.attrs.x + group.attrs.x;
+    var newY = box.attrs.y + group.attrs.y;
+    Todos.update({_id: group.getId()}, {$set: {x: newX, y: newY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
   });
 
-  box.on('dblclick dbltap', function() {
+  group.on('dblclick dbltap', function() {
     $('#update-todo-modal').modal('show');
     $('#update-todo-id').val(box.getId());
     $('#update-todo-desc').val(box.attrs.text);
@@ -152,15 +158,29 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     $('#update-todo-desc').focus();
   });
 
-  box.on('mouseover', function() {
+  group.on('mouseover', function() {
     document.body.style.cursor = 'pointer';
   });
 
-  box.on('mouseout', function() {
+  group.on('mouseout', function() {
     document.body.style.cursor = 'default';
   });
 
-  layer.add(box);
+  var shadow = new Kinetic.Rect({
+    x: x,
+    y: y + Math.abs(degOffset*3),
+    width: 100,
+    height: box.getBoxHeight() - Math.abs(degOffset*2),
+    fill: 'black',
+    strokeWidth: 0,
+    rotationDeg: degOffset+1,
+    opacity: 0.2
+  });
+
+  group.add(shadow);
+  group.add(box);
+
+  layer.add(group);
   layer.draw();
 }
 
