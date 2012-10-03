@@ -14,6 +14,8 @@ WebFontConfig = {
 
 var canvasWidth = $(window).width();
 var canvasHeight = $(window).height()-50; // account for login bar
+var scaleRatioX = canvasWidth / 3000;
+var scaleRatioY = canvasHeight / 3000;
 
 // todos minimongo collection
 Todos = new Meteor.Collection('todos');
@@ -29,7 +31,7 @@ Meteor.autosubscribe(function () {
   Meteor.subscribe('todos');
   Todos.find({}, {sort: {lastUpdate: 1}}).forEach(function (todo) {
     needForceRedraw = false; // will redraw in addBoxToCanvas
-    addBoxToCanvas(todo._id, todo.text, todo.color, todo.x, todo.y, todo.degOffset);
+    addBoxToCanvas(todo._id, todo.text, todo.color, todo.x * scaleRatioX, todo.y * scaleRatioY, todo.degOffset);
   });
 
   // cases when Todos query returns empty, still need to redraw
@@ -115,7 +117,7 @@ function createTodo() {
     if (Meteor.user()) {
       userId = Meteor.user()._id;
     }
-    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('clientX'), y: Session.get('clientY'), degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()});
+    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('clientX') / scaleRatioX, y: Session.get('clientY') / scaleRatioY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()});
   }
   // reset
   $('#new-todo-desc').val('');
@@ -155,7 +157,7 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
   group.on('dragend', function() {
     var newX = box.attrs.x + group.attrs.x;
     var newY = box.attrs.y + group.attrs.y;
-    Todos.update({_id: group.getId()}, {$set: {x: sanitizeX(newX, box.getBoxWidth()+5), y: sanitizeY(newY, box.getBoxHeight()+5), degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
+    Todos.update({_id: group.getId()}, {$set: {x: sanitizeX(newX, box.getBoxWidth()+5) / scaleRatioX, y: sanitizeY(newY, box.getBoxHeight()+5) / scaleRatioY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
   });
 
   group.on('dblclick dbltap', function() {
