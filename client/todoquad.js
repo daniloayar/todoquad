@@ -12,6 +12,9 @@ WebFontConfig = {
   s.parentNode.insertBefore(wf, s);
 })();
 
+var canvasWidth = $(window).width();
+var canvasHeight = $(window).height()-50; // account for login bar
+
 // todos minimongo collection
 Todos = new Meteor.Collection('todos');
 
@@ -36,22 +39,16 @@ Meteor.autosubscribe(function () {
 });
 
 $(window).bind("load", function() {
-  
-  var width = $('#the-grid').css('width').replace('px','') - 2;
-  var height = $(window).height() - 75;
-
   var stage = new Kinetic.Stage({
     container: 'the-grid',
-    width: width,
-    height: height
+    width: canvasWidth,
+    height: canvasHeight
   });
 
   // background shape to capture double-click events
   var rect = new Kinetic.Rect({
-    width: width,
-    height: height,
-    opacity: 0.05,
-    fill: 'white'
+    width: canvasWidth,
+    height: canvasHeight
   });
   rect.on('dblclick dbltap', function(event) {
     Session.set('clientX', stage.getMousePosition().x);
@@ -156,11 +153,9 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
   });
 
   group.on('dragend', function() {
-    console.log(group);
-    console.log(box);
     var newX = box.attrs.x + group.attrs.x;
     var newY = box.attrs.y + group.attrs.y;
-    Todos.update({_id: group.getId()}, {$set: {x: newX, y: newY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
+    Todos.update({_id: group.getId()}, {$set: {x: sanitizeX(newX, box.getBoxWidth()+5), y: sanitizeY(newY, box.getBoxHeight()+5), degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
   });
 
   group.on('dblclick dbltap', function() {
@@ -216,6 +211,26 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     layer.draw();
   };
   imageObj.src = 'red_pin_48.png';
+}
+
+function sanitizeX(x, width) {
+  if (x > 10) {
+    if (x < canvasWidth - width) {
+      return x;
+    }
+    return canvasWidth - width;
+  }
+  return 10;
+}
+
+function sanitizeY(y, height) {
+  if (y > 10) {
+    if (y < canvasHeight - height) {
+      return y;
+    }
+    return canvasHeight - height;
+  }
+  return 10;
 }
 
 function randomInRange (min, max) {
