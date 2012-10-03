@@ -49,7 +49,9 @@ $(window).bind("load", function() {
   // background shape to capture double-click events
   var rect = new Kinetic.Rect({
     width: width,
-    height: height
+    height: height,
+    opacity: 0.05,
+    fill: 'white'
   });
   rect.on('dblclick dbltap', function(event) {
     Session.set('clientX', stage.getMousePosition().x);

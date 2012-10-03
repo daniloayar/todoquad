@@ -1,9 +1,12 @@
 body {
-  margin: 0;
-  padding: 0;
+  background-image: url('/zen.jpg');
+  
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  
 }
 canvas {
-  border: 3px solid #000000;
+  border: 0 solid #000000;
 }
 .axis-top {
   border: 0 solid #000000;
