@@ -40,6 +40,7 @@ Meteor.autosubscribe(function () {
   }
 });
 
+// set the canvas up on load
 $(window).bind("load", function() {
   var stage = new Kinetic.Stage({
     container: 'the-grid',
@@ -48,18 +49,17 @@ $(window).bind("load", function() {
   });
 
   // background shape to capture double-click events
-  var rect = new Kinetic.Rect({
+  var canvasRect = new Kinetic.Rect({
     width: canvasWidth,
     height: canvasHeight
   });
-  rect.on('dblclick dbltap', function(event) {
-    Session.set('clientX', stage.getMousePosition().x);
-    Session.set('clientY', stage.getMousePosition().y);
-    $('#new-todo-modal').modal('show');
-    $('#new-todo-desc').focus();
+
+  canvasRect.on('dblclick dbltap', function(event) {
+    showNew(stage.getMousePosition().x, stage.getMousePosition().y);
   });
+
   var backLayer = new Kinetic.Layer();
-  backLayer.add(rect);
+  backLayer.add(canvasRect);
   stage.add(backLayer);
 
   // stage layer goes over backlayer
@@ -117,7 +117,7 @@ function createTodo() {
     if (Meteor.user()) {
       userId = Meteor.user()._id;
     }
-    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('clientX') / scaleRatioX, y: Session.get('clientY') / scaleRatioY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()});
+    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('newNoteX') / scaleRatioX, y: Session.get('newNoteY') / scaleRatioY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()});
   }
   // reset
   $('#new-todo-desc').val('');
@@ -130,6 +130,21 @@ function updateTodo() {
   if (text && text.length > 0) {
     Todos.update({_id: id}, {$set: {color: color, text: text}});
   }
+}
+
+function showNew(x ,y) {
+  Session.set('newNoteX', x);
+  Session.set('newNoteY', y);
+  $('#new-todo-modal').modal('show');
+  $('#new-todo-desc').focus();
+}
+
+function showEdit(box) {
+  $('#update-todo-modal').modal('show');
+  $('#update-todo-id').val(box.getId());
+  $('#update-todo-desc').val(box.attrs.text);
+  $('#update-todo-color').val(box.attrs.fill);
+  $('#update-todo-desc').focus();
 }
 
 function addBoxToCanvas(id, text, color, x, y, degOffset) {
@@ -160,16 +175,17 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     Todos.update({_id: group.getId()}, {$set: {x: sanitizeX(newX, box.getBoxWidth()+5) / scaleRatioX, y: sanitizeY(newY, box.getBoxHeight()+5) / scaleRatioY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()}}, true);
   });
 
-  group.on('dblclick dbltap', function() {
-    $('#update-todo-modal').modal('show');
-    $('#update-todo-id').val(box.getId());
-    $('#update-todo-desc').val(box.attrs.text);
-    $('#update-todo-color').val(box.attrs.fill);
-    $('#update-todo-desc').focus();
+  group.on('mouseup touchend', function() {
+    // make sure the group was just clicked, not moved
+    if (group.attrs.x === 0 && group.attrs.y === 0) {
+      showEdit(box);
+    }
   });
+
   group.on('mouseover', function() {
     document.body.style.cursor = 'pointer';
   });
+
   group.on('mouseout', function() {
     document.body.style.cursor = 'default';
   });
