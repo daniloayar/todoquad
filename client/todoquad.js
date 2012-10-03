@@ -55,7 +55,14 @@ $(window).bind("load", function() {
   });
 
   canvasRect.on('dblclick dbltap', function(event) {
-    showNew(stage.getMousePosition().x, stage.getMousePosition().y);
+    // get intial pos for note
+    var x = stage.getMousePosition().x;
+    var y = stage.getMousePosition().y;
+    if (stage.getTouchPosition()) { // mobile-friendly
+      x = stage.getTouchPosition().x;
+      y = stage.getTouchPosition().y;
+    }
+    showNew(x, y);
   });
 
   var backLayer = new Kinetic.Layer();
