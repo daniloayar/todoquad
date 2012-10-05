@@ -3,11 +3,20 @@
   <meta name="viewport" content="user-scalable=no" />
 </head>
 <body>
+  {{> tag_infos}}
   <div class="login-bar">
     {{> loginButtons}}
   </div>
   {{> canvas}}
 </body>
+
+<template name="tag_infos">
+  <div id="tag-filter" class="tag-list">
+    {{#each tags}}
+        {{tag_text}} <span class="count">({{count}})</span>
+    {{/each}}
+  </div>
+</template>
 
 <template name="canvas">
   <div id="the-grid"></div>
@@ -24,6 +33,12 @@
           <label class="control-label" for="new-todo-desc">Description</label>
           <div class="controls">
             <input id='new-todo-desc' type="text" class="input-large" />
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="new-todo-desc">Tags</label>
+          <div class="controls">
+            <input id='new-todo-tags' type="text" class="input-large" />
           </div>
         </div>
         <div class="control-group">
@@ -52,6 +67,12 @@
           <label class="control-label" for="update-todo-desc">Description</label>
           <div class="controls">
             <input id='update-todo-desc' type="text" class="input-large" />
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="update-todo-desc">Tags</label>
+          <div class="controls">
+            <input id='update-todo-tags' type="text" class="input-large" />
           </div>
         </div>
         <div class="control-group">

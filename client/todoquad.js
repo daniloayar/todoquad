@@ -31,7 +31,7 @@ Meteor.autosubscribe(function () {
   Meteor.subscribe('todos');
   Todos.find({}, {sort: {lastUpdate: 1}}).forEach(function (todo) {
     needForceRedraw = false; // will redraw in addBoxToCanvas
-    addBoxToCanvas(todo._id, todo.text, todo.color, todo.x * scaleRatioX, todo.y * scaleRatioY, todo.degOffset);
+    addBoxToCanvas(todo._id, todo.text, todo.tags, todo.color, todo.x * scaleRatioX, todo.y * scaleRatioY, todo.degOffset);
   });
 
   // cases when Todos query returns empty, still need to redraw
@@ -73,6 +73,32 @@ $(window).bind("load", function() {
   stage.add(layer);
 });
 
+Template.tag_infos.tags = function () {
+  var tag_infos = [];
+  var total_count = 0;
+
+  Todos.find({}).forEach(function (todo) {
+    _.each(todo.tags, function (tag) {
+      var tag_info = _.find(tag_infos, function (x) { return x.tag === tag; });
+      if (! tag_info)
+        tag_infos.push({tag: tag, count: 1});
+      else
+        tag_info.count++;
+    });
+    total_count++;
+  });
+
+  tag_infos = _.sortBy(tag_infos, function (x) { return x.count * -1; });
+  //tag_infos.unshift({tag: null, count: total_count});
+
+  console.log(tag_infos);
+  return tag_infos;
+};
+
+Template.tag_infos.tag_text = function () {
+  return this.tag || "All items";
+};
+
 Template.canvas.events = {
   'click #create-todo': function (event) {
     createTodo();
@@ -89,6 +115,12 @@ Template.canvas.events = {
       $('#create-todo').click();
     }
   },
+  'keypress #new-todo-tags': function (event) {
+    if (event.which === 13) {
+      createTodo();
+      $('#create-todo').click();
+    }
+  },
   'keypress #new-todo-color': function (event) {
     if (event.which === 13) {
       createTodo();
@@ -96,6 +128,12 @@ Template.canvas.events = {
     }
   },
   'keypress #update-todo-desc': function (event) {
+    if (event.which === 13) {
+      updateTodo();
+      $('#update-todo').click();
+    }
+  },
+  'keypress #update-todo-tags': function (event) {
     if (event.which === 13) {
       updateTodo();
       $('#update-todo').click();
@@ -118,13 +156,14 @@ function removeTodo() {
 
 function createTodo() {
   var text = $('#new-todo-desc').val();
+  var tags = $('#new-todo-tags').val().split(',');
   var color = $('#new-todo-color').val();
   if (text && text.length > 0) {
     var userId = null;
     if (Meteor.user()) {
       userId = Meteor.user()._id;
     }
-    Todos.insert({privateTo: userId, text: text, color: color, x: Session.get('newNoteX') / scaleRatioX, y: Session.get('newNoteY') / scaleRatioY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()});
+    Todos.insert({privateTo: userId, text: text, tags: tags, color: color, x: Session.get('newNoteX') / scaleRatioX, y: Session.get('newNoteY') / scaleRatioY, degOffset: randomInRange(-3.0,3.0), lastUpdate: new Date().getTime()});
   }
   // reset
   $('#new-todo-desc').val('');
@@ -133,9 +172,10 @@ function createTodo() {
 function updateTodo() {
   var id = $('#update-todo-id').val();
   var text = $('#update-todo-desc').val();
+  var tags = $('#update-todo-tags').val().split(',');
   var color = $('#update-todo-color').val();
   if (text && text.length > 0) {
-    Todos.update({_id: id}, {$set: {color: color, text: text}});
+    Todos.update({_id: id}, {$set: {text: text, tags: tags, color: color}});
   }
 }
 
@@ -150,11 +190,12 @@ function showEdit(box) {
   $('#update-todo-modal').modal('show');
   $('#update-todo-id').val(box.getId());
   $('#update-todo-desc').val(box.attrs.text);
+  $('#update-todo-tags').val(box.attrs.name);
   $('#update-todo-color').val(box.attrs.fill);
   $('#update-todo-desc').focus();
 }
 
-function addBoxToCanvas(id, text, color, x, y, degOffset) {
+function addBoxToCanvas(id, text, tags, color, x, y, degOffset) {
   var group = new Kinetic.Group({
     id: id,
     width: 100,
@@ -163,6 +204,7 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
 
   var box = new Kinetic.Text({
     id: id,
+    name: tags,
     x: x,
     y: y,
     width: 100,
@@ -172,7 +214,7 @@ function addBoxToCanvas(id, text, color, x, y, degOffset) {
     fontFamily: 'Nothing You Could Do',
     text: text,
     textFill: 'black',
-    padding: 10,
+    padding: 12,
     rotationDeg: degOffset
   });
 
