@@ -28,15 +28,17 @@ Meteor.autosubscribe(function () {
   // clean the canvas
   layer.removeChildren();
 
-  Meteor.subscribe('todos');
-
   var needForceRedraw = true;
   var selector = {};
 
   var tag_filter = Session.get('tag_filter');
-  if (tag_filter)
+  if (tag_filter && tag_filter != '<all tags>') {
     selector.tags = tag_filter;
+  } else if (!tag_filter) {
+    selector.tags = '';
+  }
 
+  Meteor.subscribe('todos');
   Todos.find(selector, {sort: {lastUpdate: 1}}).forEach(function (todo) {
     needForceRedraw = false; // will redraw in addBoxToCanvas
     addBoxToCanvas(todo._id, todo.text, todo.tags, todo.color, todo.x * scaleRatioX, todo.y * scaleRatioY, todo.degOffset);
@@ -96,6 +98,7 @@ Template.tag_infos.tags = function () {
     });
     total_count++;
   });
+  tag_infos.push({tag: '<all tags>', count: total_count});
 
   tag_infos = _.sortBy(tag_infos, function (x) { return x.count * -1; });
 
@@ -103,12 +106,13 @@ Template.tag_infos.tags = function () {
 };
 
 Template.tag_infos.tag_text = function () {
-  return this.tag || "All items";
+  return this.tag || "<no tag>";
 };
 
 Template.tag_infos.style = function () {
   var style = '';
   var tag_filter = Session.get('tag_filter');
+  console.log('tag_filter: ' + tag_filter + ' this.tag' + this.tag);
   if (tag_filter == this.tag || (!tag_filter && !this.tag)) {
     style = 'label-success';
   }
