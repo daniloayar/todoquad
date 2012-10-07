@@ -122,7 +122,7 @@ Template.tag_infos.style = function () {
 Template.tag_infos.events({
   'mousedown .tag': function () {
     if (Session.equals('tag_filter', this.tag))
-      Session.set('tag_filter', null);
+      Session.set('tag_filter', '<all tags>');
     else
       Session.set('tag_filter', this.tag);
   }
