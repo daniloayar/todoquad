@@ -16,7 +16,9 @@
 <template name="tag_infos">
   <div id="tag-filter" class="tag-list">
     {{#each tags}}
+      <div class="tag label {{style}}">
         {{tag_text}} <span class="count">({{count}})</span>
+      </div>
     {{/each}}
   </div>
 </template>

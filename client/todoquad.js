@@ -12,6 +12,8 @@ WebFontConfig = {
   s.parentNode.insertBefore(wf, s);
 })();
 
+Session.set('tag_filter', null);
+
 var canvasWidth = $(window).width();
 var canvasHeight = $(window).height()-50; // account for login bar
 var scaleRatioX = canvasWidth / 3000;
@@ -26,10 +28,16 @@ Meteor.autosubscribe(function () {
   // clean the canvas
   layer.removeChildren();
 
-  var needForceRedraw = true;
-
   Meteor.subscribe('todos');
-  Todos.find({}, {sort: {lastUpdate: 1}}).forEach(function (todo) {
+
+  var needForceRedraw = true;
+  var selector = {};
+
+  var tag_filter = Session.get('tag_filter');
+  if (tag_filter)
+    selector.tags = tag_filter;
+
+  Todos.find(selector, {sort: {lastUpdate: 1}}).forEach(function (todo) {
     needForceRedraw = false; // will redraw in addBoxToCanvas
     addBoxToCanvas(todo._id, todo.text, todo.tags, todo.color, todo.x * scaleRatioX, todo.y * scaleRatioY, todo.degOffset);
   });
@@ -80,24 +88,41 @@ Template.tag_infos.tags = function () {
   Todos.find({}).forEach(function (todo) {
     _.each(todo.tags, function (tag) {
       var tag_info = _.find(tag_infos, function (x) { return x.tag === tag; });
-      if (! tag_info)
+      if (!tag_info) {
         tag_infos.push({tag: tag, count: 1});
-      else
+      } else {
         tag_info.count++;
+      }
     });
     total_count++;
   });
 
   tag_infos = _.sortBy(tag_infos, function (x) { return x.count * -1; });
-  //tag_infos.unshift({tag: null, count: total_count});
 
-  console.log(tag_infos);
   return tag_infos;
 };
 
 Template.tag_infos.tag_text = function () {
   return this.tag || "All items";
 };
+
+Template.tag_infos.style = function () {
+  var style = '';
+  var tag_filter = Session.get('tag_filter');
+  if (tag_filter == this.tag || (!tag_filter && !this.tag)) {
+    style = 'label-success';
+  }
+  return style;
+};
+
+Template.tag_infos.events({
+  'mousedown .tag': function () {
+    if (Session.equals('tag_filter', this.tag))
+      Session.set('tag_filter', null);
+    else
+      Session.set('tag_filter', this.tag);
+  }
+});
 
 Template.canvas.events = {
   'click #create-todo': function (event) {
