@@ -12,7 +12,7 @@ WebFontConfig = {
   s.parentNode.insertBefore(wf, s);
 })();
 
-Session.set('tag_filter', null);
+Session.set('tag_filter', '<all tags>');
 
 var canvasWidth = $(window).width();
 var canvasHeight = $(window).height()-50; // account for login bar
