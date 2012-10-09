@@ -45,3 +45,24 @@ canvas {
   margin-right: 2px;
   cursor: pointer;
 }
+.todo-color {
+  float: left;
+  cursor: pointer;
+  text-align: center;
+  margin: 2px;
+  padding: 3px;
+  height: 20px;
+  width: 20px;
+}
+.manila {
+  background-color: #FCF0AD;
+}
+.lightgreen {
+  background-color: lightgreen;
+}
+.lightblue {
+  background-color: lightblue;
+}
+.salmon {
+  background-color: salmon;
+}

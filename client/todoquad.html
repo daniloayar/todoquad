@@ -41,7 +41,7 @@
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label" for="new-todo-desc">Tags</label>
+          <label class="control-label" for="new-todo-desc">Tags (comma-delimit)</label>
           <div class="controls">
             <input id='new-todo-tags' type="text" class="input-large" />
           </div>
@@ -49,7 +49,10 @@
         <div class="control-group">
           <label class="control-label" for="new-todo-color">Color</label>
           <div class="controls">
-            <input id='new-todo-color' type="text" class="input-large" value="#FCF0AD" />
+            <div id='update-todo-manila' class="todo-color manila"><input type="radio" name="new-color" value="#FCF0AD" class="new-todo-color" checked></div>
+            <div id='update-todo-lightgreen' class="todo-color lightgreen"><input type="radio" name="new-color" value="lightgreen"class="new-todo-color"></div>
+            <div id='update-todo-lightblue' class="todo-color lightblue"><input type="radio" name="new-color" value="lightblue"class="new-todo-color"></div>
+            <div id='update-todo-salmon' class="todo-color salmon"><input type="radio" name="new-color" value="salmon"class="new-todo-color"></div>
           </div>
         </div>
       </form>
@@ -75,7 +78,7 @@
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label" for="update-todo-desc">Tags</label>
+          <label class="control-label" for="update-todo-desc">Tags (comma-delimit)</label>
           <div class="controls">
             <input id='update-todo-tags' type="text" class="input-large" />
           </div>
@@ -83,7 +86,10 @@
         <div class="control-group">
           <label class="control-label" for="update-todo-color">Color</label>
           <div class="controls">
-            <input id='update-todo-color' type="text" class="input-large"/>
+            <div id='update-todo-manila' class="todo-color manila"><input type="radio" name="edit-color" value="#FCF0AD" class="update-todo-color" checked></div>
+            <div id='update-todo-lightgreen' class="todo-color lightgreen"><input type="radio" name="edit-color" value="lightgreen" class="update-todo-color"></div>
+            <div id='update-todo-lightblue' class="todo-color lightblue"><input type="radio" name="edit-color" value="lightblue" class="update-todo-color"></div>
+            <div id='update-todo-salmon' class="todo-color salmon"><input type="radio" name="edit-color" value="salmon" class="update-todo-color"></div>
           </div>
         </div>
       </form>

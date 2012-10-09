@@ -150,7 +150,7 @@ Template.canvas.events = {
       $('#create-todo').click();
     }
   },
-  'keypress #new-todo-color': function (event) {
+  'keypress .new-todo-color': function (event) {
     if (event.which === 13) {
       createTodo();
       $('#create-todo').click();
@@ -168,7 +168,7 @@ Template.canvas.events = {
       $('#update-todo').click();
     }
   },
-  'keypress #update-todo-color': function (event) {
+  'keypress .update-todo-color': function (event) {
     if (event.which === 13) {
       updateTodo();
       $('#update-todo').click();
@@ -186,7 +186,7 @@ function removeTodo() {
 function createTodo() {
   var text = $('#new-todo-desc').val();
   var tags = $('#new-todo-tags').val().split(',');
-  var color = $('#new-todo-color').val();
+  var color = $('input[name=new-color]:checked').val();
   if (text && text.length > 0) {
     var userId = null;
     if (Meteor.user()) {
@@ -202,7 +202,7 @@ function updateTodo() {
   var id = $('#update-todo-id').val();
   var text = $('#update-todo-desc').val();
   var tags = $('#update-todo-tags').val().split(',');
-  var color = $('#update-todo-color').val();
+  var color = $('input:radio[name=edit-color]:checked').val();
   if (text && text.length > 0) {
     Todos.update({_id: id}, {$set: {text: text, tags: tags, color: color}});
   }
@@ -211,22 +211,25 @@ function updateTodo() {
 function showNew(x ,y) {
   Session.set('newNoteX', x);
   Session.set('newNoteY', y);
-  $('#new-todo-modal').modal('show');
-  $('#new-todo-desc').focus();
 
   var newTags = '';
   if ('<all tags>' !== Session.get('tag_filter')) {
     newTags = Session.get('tag_filter');
   }
   $('#new-todo-tags').val(newTags);
+
+  $('#new-todo-modal').modal('show');
+  $('#new-todo-desc').focus();
 }
 
 function showEdit(box) {
-  $('#update-todo-modal').modal('show');
   $('#update-todo-id').val(box.getId());
   $('#update-todo-desc').val(box.attrs.text);
   $('#update-todo-tags').val(box.attrs.name);
-  $('#update-todo-color').val(box.attrs.fill);
+
+  $('input:radio[name=edit-color]').filter('[value="' + box.attrs.fill + '"]').attr('checked', true);
+
+  $('#update-todo-modal').modal('show');
   $('#update-todo-desc').focus();
 }
 
