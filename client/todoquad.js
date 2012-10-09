@@ -213,6 +213,12 @@ function showNew(x ,y) {
   Session.set('newNoteY', y);
   $('#new-todo-modal').modal('show');
   $('#new-todo-desc').focus();
+
+  var newTags = '';
+  if ('<all tags>' !== Session.get('tag_filter')) {
+    newTags = Session.get('tag_filter');
+  }
+  $('#new-todo-tags').val(newTags);
 }
 
 function showEdit(box) {
