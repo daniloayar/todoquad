@@ -1,5 +1,6 @@
 TodoQuad is a mashup of todo-lists and Stephen Covey's grid from The Seven Habits of Highly Effective People.
 
+TODO: auth has been merged to master so need to move back to master
 This meteor app should be run using the auth branch:
 https://github.com/meteor/meteor/tree/auth
 
